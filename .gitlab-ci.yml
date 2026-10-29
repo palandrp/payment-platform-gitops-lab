@@ -1,5 +1,6 @@
 stages:
   - validate
+  - build
 
 python-unit-tests:
   stage: validate
@@ -17,3 +18,28 @@ helm-chart-validation:
     - helm lint charts/mock-payment-api --strict
     - helm template mock-payment-api charts/mock-payment-api --namespace payment-demo > /dev/null
     - helm template mock-payment-api charts/mock-payment-api --namespace payment-demo --set autoscaling.enabled=true > /dev/null
+
+build-container:
+  stage: build
+  image:
+    name: moby/buildkit:rootless
+    entrypoint: [""]
+  variables:
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  before_script:
+    - mkdir -p "$HOME/.docker"
+    - |
+      printf '{"auths":{"%s":{"username":"%s","password":"%s"}}}\n' \
+        "$CI_REGISTRY" \
+        "$CI_REGISTRY_USER" \
+        "$CI_REGISTRY_PASSWORD" \
+        > "$HOME/.docker/config.json"
+  script:
+    - |
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context=. \
+        --local dockerfile=. \
+        --output "type=image,name=${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA},push=true"
