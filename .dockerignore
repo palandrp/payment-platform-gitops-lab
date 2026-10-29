@@ -1,0 +1,9 @@
+.git
+.gitlab
+__pycache__
+*.py[cod]
+tests/
+docs/
+gitops/
+charts/
+.venv/

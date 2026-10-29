@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mock-payment-api
+  labels:
+    {{- include "mock-payment-api.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    app: mock-payment-api

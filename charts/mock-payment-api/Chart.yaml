@@ -1,0 +1,6 @@
+apiVersion: v2
+name: mock-payment-api
+description: A mock, non-financial API for Kubernetes GitOps practice
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
