@@ -2,7 +2,7 @@
 
 A hands-on Kubernetes operations and GitOps lab built on a **manually installed, non-kubeadm** Kubernetes cluster. The goal is to document real engineering decisions and validate deployment, reconciliation, and failure-recovery behavior with reproducible experiments.
 
-> **Status (2026-10-29):** existing lab cluster inventoried; mock API unit tests passed. **Helm rendering, CI delivery, Argo CD installation, GitOps sync, and failure tests are not yet validated.** This repository records progress; planned capabilities are not presented as completed work.
+> **Status (2026-10-29):** existing lab cluster inventoried; mock API unit tests passed. **Helm rendering, CI delivery, Argo CD installation, GitOps sync, and failure tests are not yet validated.** This repository records progress; planned capabilities are not presented as completed work. Helm lint and rendering have already been successfully verified locally using Helm 4.2.4, while GitLab CI is still awaiting confirmation.
 
 ## Why this project?
 
