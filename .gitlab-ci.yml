@@ -1,0 +1,19 @@
+stages:
+  - validate
+
+python-unit-tests:
+  stage: validate
+  image: python:3.12-slim
+  script:
+    - python -m unittest discover -s tests -v
+
+helm-chart-validation:
+  stage: validate
+  image:
+    name: alpine/helm:4.2.4
+    entrypoint: [""]
+  script:
+    - helm version --short
+    - helm lint charts/mock-payment-api --strict
+    - helm template mock-payment-api charts/mock-payment-api --namespace payment-demo > /dev/null
+    - helm template mock-payment-api charts/mock-payment-api --namespace payment-demo --set autoscaling.enabled=true > /dev/null
