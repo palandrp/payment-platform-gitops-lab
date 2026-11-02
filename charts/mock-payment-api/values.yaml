@@ -1,7 +1,7 @@
 replicaCount: 2
 image:
-  repository: mock-payment-api
-  tag: local
+  repository: registry.gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab
+  tag: ce086216b6408b3dd67180dde62ec7582e76714e
   pullPolicy: IfNotPresent
 # Example: [{name: gitlab-registry}] if your image registry requires authentication.
 imagePullSecrets: []
