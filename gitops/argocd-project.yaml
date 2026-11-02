@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: payment-demo
+  namespace: argocd
+spec:
+  description: "GitOps laboratory application"
+
+  sourceRepos:
+    - https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab.git
+
+  destinations:
+    - namespace: payment-demo
+      server: https://kubernetes.default.svc
+
+  # Cluster-scoped resources are not permitted.
+  clusterResourceWhitelist: []
+
+  # Only explicitly allowed namespaced resource kinds.
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: Service
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: ReplicaSet
+    - group: ""
+      kind: Pod
