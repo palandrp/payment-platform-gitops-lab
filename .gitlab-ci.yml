@@ -1,6 +1,7 @@
 stages:
   - validate
   - build
+  - promote
 
 python-unit-tests:
   stage: validate
@@ -43,3 +44,76 @@ build-container:
         --local context=. \
         --local dockerfile=. \
         --output "type=image,name=${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA},push=true"
+
+promote-gitops:
+  stage: promote
+  image: alpine:3.21
+
+  needs:
+    - build-container
+
+  resource_group: gitops-promotion
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+
+  before_script:
+    - apk add --no-cache git
+
+  script:
+    - |
+      set -eu
+
+      git config user.name "GitOps Bot"
+      git config user.email "gitops-bot@example.invalid"
+
+      # Work with the latest default branch.
+      git fetch origin \
+        "+refs/heads/${CI_DEFAULT_BRANCH}:refs/remotes/origin/${CI_DEFAULT_BRANCH}"
+
+      # Reject commits that are no longer part of the default branch.
+      if ! git merge-base --is-ancestor \
+        "$CI_COMMIT_SHA" "origin/${CI_DEFAULT_BRANCH}"; then
+        echo "Source commit is no longer on the default branch"
+        exit 1
+      fi
+
+      # Do not promote an old image after newer source changes.
+      if git log --format='%s' \
+        "${CI_COMMIT_SHA}..origin/${CI_DEFAULT_BRANCH}" |
+        grep -Ev '^gitops: promote image [0-9a-f]{40} \[skip ci\]$' |
+        grep -q .; then
+        echo "Newer source changes detected; skipping outdated promotion"
+        exit 0
+      fi
+
+      git checkout -B \
+        "$CI_DEFAULT_BRANCH" "origin/$CI_DEFAULT_BRANCH"
+
+      VALUES="charts/mock-payment-api/values.yaml"
+
+      # Update GitOps desired state.
+      sed -i \
+        "s|^  repository:.*|  repository: ${CI_REGISTRY_IMAGE}|" \
+        "$VALUES"
+
+      sed -i \
+        "s|^  tag:.*|  tag: ${CI_COMMIT_SHA}|" \
+        "$VALUES"
+
+      # Skip if the desired state is already current.
+      if git diff --quiet -- "$VALUES"; then
+        echo "GitOps image is already up to date"
+        exit 0
+      fi
+
+      git add "$VALUES"
+
+      git commit -m \
+        "gitops: promote image ${CI_COMMIT_SHA} [skip ci]"
+
+      # Push with short-lived CI_JOB_TOKEN.
+      git remote set-url origin \
+        "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+
+      git push origin "HEAD:refs/heads/${CI_DEFAULT_BRANCH}"
