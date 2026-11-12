@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mock-payment-api
+  namespace: argocd
+spec:
+  project: payment-demo
+
+  source:
+    repoURL: https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab.git
+    targetRevision: main
+    path: charts/mock-payment-api
+    helm:
+      releaseName: mock-payment-api
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: payment-demo
