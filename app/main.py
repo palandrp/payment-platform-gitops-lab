@@ -64,3 +64,5 @@ def serve(port=8080):
 
 if __name__ == '__main__':
     serve(int(os.environ.get('PORT', '8080')))
+
+# GitOps E2E validation: 2026-11-17T17:27:34Z
