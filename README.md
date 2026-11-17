@@ -2,7 +2,7 @@
 
 A hands-on Kubernetes operations and GitOps lab built on a **manually installed, non-kubeadm** Kubernetes cluster. The goal is to document real engineering decisions and validate deployment, reconciliation, and failure-recovery behavior with reproducible experiments.
 
-> **Status (2026-10-29):** existing lab cluster inventoried; mock API unit tests passed. **Helm rendering, CI delivery, Argo CD installation, GitOps sync, and failure tests are not yet validated.** This repository records progress; planned capabilities are not presented as completed work. Helm lint and rendering have already been successfully verified locally using Helm 4.2.4, while GitLab CI is still awaiting confirmation.
+> **Validated 2026-11-17:** GitLab CI, image promotion, Argo CD automatic synchronization and self-healing, plus Gateway API routing, passed the documented lab checks. See [validation evidence](docs/evidence/2026-11-17-gitops-validation.md). A Weave Net incident remains partially unresolved; production HA is **not** claimed.
 
 ## Why this project?
 
@@ -28,7 +28,7 @@ A hands-on Kubernetes operations and GitOps lab built on a **manually installed,
                          mock-payment-api
 ```
 
-Four Kubernetes nodes are schedulable by design, including the two control-plane nodes. The single HAProxy instance and two-member etcd cluster are known **lab trade-offs**, not claims of production-grade high availability. Details: [sanitized architecture](docs/architecture.md).
+Four Kubernetes nodes are eligible for workloads by design, including the two control-plane nodes; `node01` is temporarily cordoned following a CNI incident. The single HAProxy instance and two-member etcd cluster are known **lab trade-offs**, not claims of production-grade high availability. Details: [sanitized architecture](docs/architecture.md).
 
 The cluster was set up following the manual at https://github.com/mmumshad/kubernetes-the-hard-way. Prior to this project, the following modifications were made: the taints on the control-plane nodes were removed to allow workloads to be scheduled on them as well, and a gateway was added.
 
@@ -39,12 +39,12 @@ The cluster was set up following the manual at https://github.com/mmumshad/kuber
 | `app/` | Deliberately non-financial mock HTTP API |
 | `tests/` | Python unit tests |
 | `Dockerfile` | Non-root container image |
-| `charts/mock-payment-api/` | Helm chart (image values are placeholders) |
+| `charts/mock-payment-api/` | Helm chart: Deployment, Service, HTTPRoute and optional HPA |
 | `docs/architecture.md` | Sanitized observed architecture and limitations |
 | `docs/decisions/` | Architectural decision records |
 | `docs/evidence/` | Public, redacted evidence conventions |
 
-**Not included yet:** production-ready CI, Argo CD Application / AppProject, Gateway routes, monitoring, or tested recovery automation. These will be added as distinct, reviewable changes.
+**Implemented and validated:** GitLab CI/CD, GitOps promotion, scoped Argo CD Application/AppProject, HTTPRoute, and self-healing. **Not yet validated:** runtime autoscaling, full CNI recovery, and production-grade HA.
 
 ## Local test
 
@@ -54,16 +54,16 @@ Requires Python 3.12+; no third-party Python packages are needed.
 python3 -m unittest discover -s tests -v
 ```
 
-Once Helm is available, validate the chart **without changing the cluster**:
+Validate the chart **without changing the cluster**:
 
 ```bash
 helm lint charts/mock-payment-api --strict
 helm template mock-payment-api charts/mock-payment-api --namespace payment-demo
 ```
 
-> The default `image.repository` and `image.tag` in Helm values are placeholders; deployment requires a published image and registry access.
+> CI updates `image.repository` and `image.tag` in Helm values to the published registry image and full source commit SHA. The GitLab registry image must be pullable by the cluster.
 
-## Delivery design (planned)
+## Delivery workflow (validated)
 
 ```text
 GitLab CI → GitLab Container Registry → GitOps commit
@@ -73,7 +73,7 @@ GitLab CI → GitLab Container Registry → GitOps commit
                                   Helm → Kubernetes
 ```
 
-**GitLab** will be the canonical repository for CI and desired state. **GitHub** will carry a public mirror of the same reviewed Git history. No raw credentials, cluster kubeconfigs, snapshots, or private lab outputs belong in either repository.
+**GitLab** is the canonical repository for CI and desired state. **GitHub** receives a public push mirror of the same reviewed Git history. No raw credentials, cluster kubeconfigs, snapshots, or private lab outputs belong in either repository.
 
 ## Progress and evidence
 
@@ -81,10 +81,10 @@ GitLab CI → GitLab Container Registry → GitOps commit
 | --- | --- |
 | Existing hard-way cluster and external routing inventoried | Observed |
 | Python mock API tests | Passed locally (3/3) |
-| Helm chart lint/render | Pending local validation |
-| GitLab CI image build and promotion | Planned |
-| Argo CD scoped deployment | Planned |
-| Git drift / failure-recovery tests | Planned |
-| Prometheus / advanced observability | Optional, planned |
+| Helm chart lint/render | Passed (including optional HPA template rendering; runtime HPA untested) |
+| GitLab CI image build and promotion | Passed: tests, rootless BuildKit, GitLab Registry, GitOps values commit |
+| Argo CD scoped deployment | Passed: Deployment, Service, HTTPRoute; Synced / Healthy |
+| Automated delivery and drift recovery | Passed: source commit → automated rollout; replica drift 1 → 2 self-healed |
+| Prometheus / advanced observability | Not implemented |
 
-Only completed exercises will receive links to redacted logs, commits, pipeline runs, screenshots, and incident write-ups in [`docs/evidence/`](docs/evidence/).
+Completed tests and their limits are recorded in [docs/evidence/2026-11-17-gitops-validation.md](docs/evidence/2026-11-17-gitops-validation.md).

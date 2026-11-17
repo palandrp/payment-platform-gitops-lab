@@ -26,3 +26,5 @@ spec:
       kind: ReplicaSet
     - group: ""
       kind: Pod
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute

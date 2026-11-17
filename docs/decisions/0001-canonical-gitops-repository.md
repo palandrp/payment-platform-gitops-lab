@@ -1,11 +1,11 @@
 # ADR-0001: One canonical GitOps source, with a public mirror
 
 - **Date:** 2026-10-29
-- **Status:** Accepted (implementation planned)
+- **Status:** Accepted; implementation validated 2026-11-17
 
 ## Context
 
-The lab needs an auditable delivery path and a public, reviewable engineering history. GitHub is used to showcase the project; GitLab will provide CI, container registry and the desired state watched by Argo CD.
+The lab needs an auditable delivery path and a public, reviewable engineering history. GitHub is used to showcase the project; GitLab provides CI, container registry and the desired state watched by Argo CD.
 
 ## Decision
 
@@ -18,5 +18,5 @@ The lab needs an auditable delivery path and a public, reviewable engineering hi
 ## Consequences
 
 - Public and canonical histories must be safe to share before any push.
-- Mirroring will initially be explicit/manual; automatic GitLab push-mirroring may be configured later.
-- CI and Argo CD configurations are added only after review and testing. This ADR describes the selected architecture, **not deployed behavior**.
+- GitLab-to-GitHub push mirroring is configured and was confirmed working.
+- CI and Argo CD configurations were implemented and verified in the lab; see [validation evidence](../evidence/2026-11-17-gitops-validation.md).

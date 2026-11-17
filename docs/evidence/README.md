@@ -10,4 +10,4 @@ Publish an experiment only when it has been performed, with:
 
 Never publish raw `kubectl get -o yaml` dumps containing credentials, kubeconfig files, IP inventories, unredacted logs, etcd snapshots, private architecture handoffs, or interview preparation notes. Put raw evidence in a local directory excluded by `.gitignore` such as `evidence/private/`.
 
-**At bootstrap:** no GitOps deployment or controlled failure is claimed as completed. Evidence documents will be added alongside actual exercises.
+**Validated lab exercises:** [2026-11-17 — GitOps delivery, Gateway API and self-healing](2026-11-17-gitops-validation.md).
