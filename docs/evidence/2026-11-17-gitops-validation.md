@@ -14,7 +14,7 @@
   - [build-container](https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab/-/jobs/18116014546)
   - [promote-gitops](https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab/-/jobs/18116014547)
 - GitOps promotion commit: [6d38f64](https://github.com/palandrp/payment-platform-gitops-lab/commit/6d38f64aa0c5b09da6fe4b310b237881b5d908f3).
-- Argo CD synchronization and rollout were verified in the cluster; a public screenshot has not been attached.
+- Argo CD synchronization and rollout were verified in the cluster.
 
 ## Self-healing
 
