@@ -44,3 +44,14 @@ kubectl -n argocd get application mock-payment-api
 kubectl -n payment-demo rollout status deploy/mock-payment-api
 kubectl -n payment-demo get httproute mock-payment-api
 ```
+
+### Argo CD deployment evidence
+
+The following screenshot shows the application in a
+Synced / Healthy state, with its Kubernetes resource tree.
+
+![Argo CD — mock-payment-api Synced and Healthy](images/argocd-synced-healthy.png)
+
+Note: This screenshot captures the application state at the
+time of capture. The historical CI pipeline and source commit
+are linked above.
