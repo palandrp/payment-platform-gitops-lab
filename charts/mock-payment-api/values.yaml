@@ -1,7 +1,7 @@
 replicaCount: 2
 image:
   repository: registry.gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab
-  tag: 01d91288befb341d769be6776cf0c944b9eb9e54
+  tag: 17b85ad62a0eb0cd222bb0a25123b316d9f5c3c9
   pullPolicy: IfNotPresent
 # Example: [{name: gitlab-registry}] if your image registry requires authentication.
 imagePullSecrets: []
