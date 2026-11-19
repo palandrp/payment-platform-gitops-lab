@@ -6,7 +6,15 @@
 - A source-only commit triggered the pipeline. The operator observed automatic Argo CD Sync in the UI (no manual Sync).
 - Deployed registry tag: `26e76974280974487a3716a1126c5b88034e0402` (full source commit SHA).
 - Result: Argo CD `Synced / Healthy`; `deployment/mock-payment-api` rollout succeeded (2/2 replicas).
-- A pipeline URL/screenshot has not yet been attached and must not be invented.
+- Verified CI pipeline: [#3080260304](https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab/-/pipelines/3080260304) — success.
+- Source commit: [26e7697](https://github.com/palandrp/payment-platform-gitops-lab/commit/26e76974280974487a3716a1126c5b88034e0402).
+- Successful CI jobs:
+  - [python-unit-tests](https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab/-/jobs/18116014544)
+  - [helm-chart-validation](https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab/-/jobs/18116014545)
+  - [build-container](https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab/-/jobs/18116014546)
+  - [promote-gitops](https://gitlab.com/pavel_petrikovskiy/payment-platform-gitops-lab/-/jobs/18116014547)
+- GitOps promotion commit: [6d38f64](https://github.com/palandrp/payment-platform-gitops-lab/commit/6d38f64aa0c5b09da6fe4b310b237881b5d908f3).
+- Argo CD synchronization and rollout were verified in the cluster; a public screenshot has not been attached.
 
 ## Self-healing
 
